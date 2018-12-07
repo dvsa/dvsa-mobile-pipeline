@@ -1,7 +1,7 @@
 # DVSA Mobile Pipeline
 
 The following repository contains the core pipeline code for automating the build of IPA files. For the common library
-repository please look [here]()
+repository please look [here](https://github.com/dvsa/dvsa-mobile-pipeline-libs)
 
 ## Getting Started
 
