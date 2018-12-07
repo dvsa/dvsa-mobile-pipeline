@@ -19,7 +19,6 @@ The pipeline also expects the following dependencies to be installed on the Jenk
 * ScanRepo
 * Cordova 
 
-
 ### Stages
 
 The pipeline has the following stages:
@@ -33,7 +32,6 @@ The pipeline has the following stages:
 * Configure Plugin
 * Cordova Platform
 * Build
-* Integration Tests --> This section uses an AWS Device Farm plugin. For more information please look [here](https://github.com/awslabs/aws-device-farm-jenkins-plugin)
 * Upload to S3
 * Generate bucket URL
 
@@ -55,9 +53,6 @@ PLUGIN | Choice Parameter | A 'Yes' 'No' choice. This tells the pipeline to run 
 PLUGIN_REPO | String | The repository URL of the plugin repo | N
 PLUGIN_TARGET | String | The name of the plugin git repository | N
 BUCKET | String | The S3 bucket that stores the IPA file | Y
-DEVICE_FARM | Choice Parameter | A 'Yes' 'No' choice. This tells the pipeline to run the integration tests or not | N
-UI_AUTOMATION_ARTIFACT | String | The name of your automation artifact| N
-DEVICE_FARM_PROJECT_NAME | String | The name of your device farm project | N
 IPA_FILE_NAME | String | The name of the IPA file | Y
 
 ## Optional Parameters
@@ -68,10 +63,8 @@ cordova plugin add ${plugin_name}
 ```
 To add that external plugin to the cordova build.
 If you don't want to use this functionality set **'PLUGIN'** to **No**
-### Device Farm
-The **Integration Tests** section uses AWS Device Farm if you don't want to use this functionality set **'DEVICE_FARM'** to **No**
 ## Security
-The pipeline will be accessing S3 and Device Farm. It is recommended that the Jenkins box is configured with an IAM role
+The pipeline will be accessing S3. It is recommended that the Jenkins box is configured with an IAM role
 giving the pipeline access to those resources but restricting what features it can access from them.
 
 ## Common Issues & Fixes

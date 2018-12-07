@@ -17,9 +17,6 @@ String plugin_check             = "${PLUGIN}"
 String plugin_repo              = "${PLUGIN_REPO}"
 String plugin_target            = "${PLUGIN_TARGET}"
 String bucket                   = "${BUCKET}"
-String device_farm              = "${DEVICE_FARM}"
-String ui_automation_artifact   = "${UI_AUTOMATION_ARTIFACT}"
-String device_farm_project_name = "${DEVICE_FARM_PROJECT_NAME}"
 String file                     = "${IPA_FILE_NAME}"
 //---------------------------------------------------------
 
@@ -162,17 +159,6 @@ timestamps {
             deleteDir()
 
             unstash "build"
-
-            /**
-             * Run integration tests against device farm
-             */
-            if (device_farm == "Yes") {
-                stage('Integration Tests') {
-                    CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
-                    MobileCoreFunctions.testing('integration', ui_automation_artifact, file, device_farm_project_name)
-                    CommonFunctions.log('info', 'INTEGRATION TESTS COMPLETED')
-                }
-            }
 
             /**
              * Upload IPA file to S3
