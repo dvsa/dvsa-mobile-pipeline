@@ -10,14 +10,19 @@ def CommonFunctions     = new CommonFunctions()
 def MobileCoreFunctions = new MobileCoreFunctions()
 def GitFunctions        = new GitFunctions()
 //---------------------------------------------------------
-String branch                   = "${GIT_BRANCH}"
-String target_location          = "${TARGET_LOCATION}"
-String git_repo_url             = "${GIT_REPO_URL}"
-String plugin_check             = "${PLUGIN}"
-String plugin_repo              = "${PLUGIN_REPO}"
-String plugin_target            = "${PLUGIN_TARGET}"
-String bucket                   = "${BUCKET}"
-String file                     = "${IPA_FILE_NAME}"
+branch          = "${GIT_BRANCH}"
+target_location = "${TARGET_LOCATION}"
+git_repo_url    = "${GIT_REPO_URL}"
+plugin_check    = "${PLUGIN}"
+
+if (plugin_check.toString() == 'Yes') {
+    plugin_repo     = "${PLUGIN_REPO}"
+    plugin_target   = "${PLUGIN_TARGET}"
+    plugin_branch   = "${PLUGIN_BRANCH}"
+}
+
+bucket  = "${BUCKET}"
+file    = "${IPA_FILE_NAME}"
 //---------------------------------------------------------
 
 timestamps {
@@ -40,7 +45,7 @@ timestamps {
                         },
                         plugin: {
                             if (plugin_check == 'Yes') {
-                                GitFunctions.git_check_out(plugin_repo, branch, plugin_target, Globals.GITLAB_CREDS)
+                                GitFunctions.git_check_out(plugin_repo, plugin_branch, plugin_target, Globals.GITLAB_CREDS)
                             }
                         }
                 )
@@ -58,14 +63,43 @@ timestamps {
             def WORKSPACE = pwd()
 
             dir("${WORKSPACE}/${target_location}") {
-
                 /**
                  * Run the security checks against the repo this is done using the home office security scanner
                  */
                 stage('Security Check') {
                     CommonFunctions.log('info', 'STAGE: SECURITY CHECK')
-                    MobileCoreFunctions.security('')
+                    MobileCoreFunctions.security()
                     CommonFunctions.log('info', 'SECURITY CHECKS COMPLETED')
+                }
+            }
+
+            dir("${WORKSPACE}") {
+                CommonFunctions.log('info', 'STASHING CODE')
+                stash allowEmpty: true, name: "${target_location}", includes: "${target_location}/**"
+                CommonFunctions.log('info', 'STASHED')
+            }
+        }
+
+        /**
+         * The following code will be run on the mac in the cloud instance
+         */
+        node('mac') {
+            deleteDir()
+
+            def mac_workspace = pwd()
+
+            CommonFunctions.log('info', 'UNSTASHING CODE')
+            unstash "${target_location}"
+            CommonFunctions.log('info', 'CODE UNSTASHED')
+
+            dir("${mac_workspace}/${target_location}") {
+                /**
+                 * NPM Install
+                 */
+                stage('NPM Install') {
+                    CommonFunctions.log('info', 'STAGE: NPM INSTALL')
+                    MobileCoreFunctions.install()
+                    CommonFunctions.log('info', 'STAGE: NPM INSTALL COMPLETED')
                 }
 
                 /**
@@ -75,15 +109,6 @@ timestamps {
                     CommonFunctions.log('info', 'STAGE: SONARQUBE')
                     MobileCoreFunctions.sonar()
                     CommonFunctions.log('info', 'CODE LINTING COMPLETED')
-                }
-
-                /**
-                 * NPM Install
-                 */
-                stage('NPM Install') {
-                    CommonFunctions.log('info', 'STAGE: NPM INSTALL')
-                    MobileCoreFunctions.install()
-                    CommonFunctions.log('info', 'STAGE: NPM INSTALL COMPLETED')
                 }
 
                 /**
@@ -124,28 +149,16 @@ timestamps {
                     MobileCoreFunctions.configure()
                     CommonFunctions.log('info', 'PLATFORM CONFIGURED SUCCESSFULLY')
                 }
-
-                dir("${WORKSPACE}") {
-                    CommonFunctions.log('info', 'STASHING CODE')
-                    stash allowEmpty: true, name: "${target_location}", includes: "${target_location}/**"
-                }
             }
-        }
-
-        /**
-         * The following code will be run on the mac in the cloud instance
-         */
-        node('mac') {
-            def mac_workspace = pwd()
-
-            unstash "${target_location}"
 
             dir("${mac_workspace}/${target_location}/platforms/ios") {
                 /**
                  * This stage cleans the code, archives the code and exports the archive to a .ipa file
                  */
                 stage('Build') {
+                    CommonFunctions.log('info', 'STAGE: BUILD')
                     MobileCoreFunctions.build()
+                    CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
                 }
 
                 stash name: "build", includes: "build/**"
