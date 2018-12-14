@@ -62,20 +62,9 @@ timestamps {
 
             def WORKSPACE = pwd()
 
-            dir("${WORKSPACE}/${target_location}") {
-                /**
-                 * Run the security checks against the repo this is done using the home office security scanner
-                 */
-                stage('Security Check') {
-                    CommonFunctions.log('info', 'STAGE: SECURITY CHECK')
-                    MobileCoreFunctions.security()
-                    CommonFunctions.log('info', 'SECURITY CHECKS COMPLETED')
-                }
-            }
-
             dir("${WORKSPACE}") {
                 CommonFunctions.log('info', 'STASHING CODE')
-                stash allowEmpty: true, name: "${target_location}", includes: "${target_location}/**"
+                stash allowEmpty: true, useDefaultExcludes: false, name: "${target_location}", includes: "${target_location}/**"
                 CommonFunctions.log('info', 'STASHED')
             }
         }
@@ -100,6 +89,15 @@ timestamps {
                     CommonFunctions.log('info', 'STAGE: NPM INSTALL')
                     MobileCoreFunctions.install()
                     CommonFunctions.log('info', 'STAGE: NPM INSTALL COMPLETED')
+                }
+
+                /**
+                 * Run the security checks against the repo this is done using the home office security scanner
+                 */
+                stage('Security Check') {
+                    CommonFunctions.log('info', 'STAGE: SECURITY CHECK')
+                    MobileCoreFunctions.security()
+                    CommonFunctions.log('info', 'SECURITY CHECKS COMPLETED')
                 }
 
                 /**
