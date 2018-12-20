@@ -54,6 +54,9 @@ PLUGIN_REPO | String | The repository URL of the plugin repo | N
 PLUGIN_TARGET | String | The name of the plugin git repository | N
 BUCKET | String | The S3 bucket that stores the IPA file | Y
 IPA_FILE_NAME | String | The name of the IPA file | Y
+INTEGRATION_TEST_CHECK | Choice Parameter | A 'Yes' 'No' choice. This tells the pipeline if you'd like to run the integration tests or not | Y
+TEST_TYPE | Choice Parameter | A list of parameters of a String parameter of the type of tests you'd like to run. Currently this pipeline only supports Appium but this will grow | N
+TEST_SUITE | String | The name of the test suite you'd like to run | N
 
 ## Optional Parameters
 ### Plugin

@@ -18,3 +18,7 @@ This change log will act as a record of all changes to the mobile pipeline repo.
 ## 0.0.3 -> 14-12-2018
 - Adding security stage to the mac node
 - Updating stash code to include all files (required for the security stage)
+
+## 0.0.4 -> 20-12-2018
+- Adding Appium support
+- Updating README.md

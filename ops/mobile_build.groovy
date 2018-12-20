@@ -23,6 +23,12 @@ if (plugin_check.toString() == 'Yes') {
 
 bucket  = "${BUCKET}"
 file    = "${IPA_FILE_NAME}"
+integration_test_check = "${INTEGRATION_TEST_CHECK}"
+
+if (integration_test_check.toString() == 'Yes') {
+    integration_type    = "${TEST_TYPE}"
+    test_suite          = "${TEST_SUITE}"
+}
 //---------------------------------------------------------
 
 timestamps {
@@ -114,7 +120,7 @@ timestamps {
                  */
                 stage('Unit Tests') {
                     CommonFunctions.log('info', 'STAGE: UNIT TESTS')
-                    MobileCoreFunctions.testing('unit', ' ', ' ', ' ')
+                    MobileCoreFunctions.testing('unit', ' ', ' ', ' ', ' ')
                     CommonFunctions.log('info', 'UNIT TESTS COMPLETED')
                 }
 
@@ -160,6 +166,15 @@ timestamps {
                 }
 
                 stash name: "build", includes: "build/**"
+
+                CommonFunctions.log('info', 'INTEGRATION TESTS SET TO : ' + integration_test_check)
+                if (integration_test_check == 'Yes') {
+                    stage('Integration Tests') {
+                        CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
+                        MobileCoreFunctions.testing('integration', integration_type, ' ', ' ', test_suite)
+                        CommonFunctions.log('info', 'TESTS COMPLETED SUCCESSFULLY')
+                    }
+                }
             }
         }
 
