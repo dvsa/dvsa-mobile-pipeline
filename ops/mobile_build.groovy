@@ -1,4 +1,4 @@
-@Library('MobilePipelineSharedLibrary@master')
+@Library('MobilePipelineSharedLibrary')
 import aws.dvsa.mobile.Globals
 import aws.dvsa.mobile.CommonFunctions
 import aws.dvsa.mobile.GitFunctions
