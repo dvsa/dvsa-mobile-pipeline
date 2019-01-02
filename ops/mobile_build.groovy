@@ -159,18 +159,10 @@ timestamps {
                 /**
                  * This stage cleans the code, archives the code and exports the archive to a .ipa file
                  */
-                dir("platforms/ios") {
-                    stage('Build') {
-                        CommonFunctions.log('info', 'STAGE: BUILD')
-                        MobileCoreFunctions.build()
-                        CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
-                    }
-                }
-                
-                stage('Fastlane Build') {
-                    CommonFunctions.log('info', 'STAGE: FASTLANE BUILD')
-                    MobileCoreFunctions.fastlaneBuild()
-                    CommonFunctions.log('info', 'FASTLANE BUILD COMPLETED SUCCESSFULLY')
+                stage('Build') {
+                    CommonFunctions.log('info', 'STAGE: BUILD')
+                    MobileCoreFunctions.build()
+                    CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
                 }
                 
                 dir("platforms/ios") {
