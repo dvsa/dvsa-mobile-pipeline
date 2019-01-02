@@ -153,9 +153,7 @@ timestamps {
                     MobileCoreFunctions.configure()
                     CommonFunctions.log('info', 'PLATFORM CONFIGURED SUCCESSFULLY')
                 }
-            }
-
-            dir("${mac_workspace}/${target_location}") {
+                
                 /**
                  * This stage cleans the code, archives the code and exports the archive to a .ipa file
                  */
@@ -164,17 +162,18 @@ timestamps {
                     MobileCoreFunctions.build()
                     CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
                 }
-                
-                dir("platforms/ios") {
-                    stash name: "build", includes: "build/**"
+            }
 
-                    CommonFunctions.log('info', 'INTEGRATION TESTS SET TO : ' + integration_test_check)
-                    if (integration_test_check == 'Yes') {
-                        stage('Integration Tests') {
-                            CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
-                            MobileCoreFunctions.testing('integration', integration_type, ' ', ' ', test_suite)
-                            CommonFunctions.log('info', 'TESTS COMPLETED SUCCESSFULLY')
-                        }
+            dir("${mac_workspace}/${target_location}/platforms/ios") {
+                
+                stash name: "build", includes: "build/**"
+
+                CommonFunctions.log('info', 'INTEGRATION TESTS SET TO : ' + integration_test_check)
+                if (integration_test_check == 'Yes') {
+                    stage('Integration Tests') {
+                        CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
+                        MobileCoreFunctions.testing('integration', integration_type, ' ', ' ', test_suite)
+                        CommonFunctions.log('info', 'TESTS COMPLETED SUCCESSFULLY')
                     }
                 }
             }
