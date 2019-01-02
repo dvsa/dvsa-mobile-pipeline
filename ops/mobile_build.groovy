@@ -155,24 +155,34 @@ timestamps {
                 }
             }
 
-            dir("${mac_workspace}/${target_location}/platforms/ios") {
+            dir("${mac_workspace}/${target_location}") {
                 /**
                  * This stage cleans the code, archives the code and exports the archive to a .ipa file
                  */
-                stage('Build') {
-                    CommonFunctions.log('info', 'STAGE: BUILD')
-                    MobileCoreFunctions.build()
-                    CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
+                dir("platforms/ios") {
+                    stage('Build') {
+                        CommonFunctions.log('info', 'STAGE: BUILD')
+                        MobileCoreFunctions.build()
+                        CommonFunctions.log('info', 'BUILD COMPLETED SUCCESSFULLY')
+                    }
                 }
+                
+                stage('Fastlane Build') {
+                    CommonFunctions.log('info', 'STAGE: FASTLANE BUILD')
+                    MobileCoreFunctions.fastlaneBuild()
+                    CommonFunctions.log('info', 'FASTLANE BUILD COMPLETED SUCCESSFULLY')
+                }
+                
+                dir("platforms/ios") {
+                    stash name: "build", includes: "build/**"
 
-                stash name: "build", includes: "build/**"
-
-                CommonFunctions.log('info', 'INTEGRATION TESTS SET TO : ' + integration_test_check)
-                if (integration_test_check == 'Yes') {
-                    stage('Integration Tests') {
-                        CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
-                        MobileCoreFunctions.testing('integration', integration_type, ' ', ' ', test_suite)
-                        CommonFunctions.log('info', 'TESTS COMPLETED SUCCESSFULLY')
+                    CommonFunctions.log('info', 'INTEGRATION TESTS SET TO : ' + integration_test_check)
+                    if (integration_test_check == 'Yes') {
+                        stage('Integration Tests') {
+                            CommonFunctions.log('info', 'STAGE: INTEGRATION TESTS')
+                            MobileCoreFunctions.testing('integration', integration_type, ' ', ' ', test_suite)
+                            CommonFunctions.log('info', 'TESTS COMPLETED SUCCESSFULLY')
+                        }
                     }
                 }
             }
